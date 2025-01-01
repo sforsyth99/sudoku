@@ -12,24 +12,26 @@ interface SudokuGridProps {
 const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
   const [showPencilMarks, setShowPencilMarks] = useState(true);
   const [grid, setGrid] = useState<PencilMarks[][]>(
-    Array(9).fill(null).map(() =>
-      Array(9).fill(null).map(() =>
-        Array(9).fill(true)
+    Array(9)
+      .fill(null)
+      .map(() =>
+        Array(9)
+          .fill(null)
+          .map(() => Array(9).fill(true))
       )
-    )
   );
 
   // Get all numbers that should be removed from pencil marks for a given cell
   const getConflictingNumbers = (row: number, col: number): Set<number> => {
     const conflicts = new Set<number>();
-    
+
     // Check row
-    puzzle[row].forEach((num, i) => {
+    puzzle[row].forEach((num) => {
       if (num !== null) conflicts.add(num);
     });
 
     // Check column
-    puzzle.forEach((r, i) => {
+    puzzle.forEach((r) => {
       if (r[col] !== null) conflicts.add(r[col]!);
     });
 
@@ -48,24 +50,30 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
 
   // Initialize pencil marks based on the puzzle
   useEffect(() => {
-    const newGrid = Array(9).fill(null).map((_, row) =>
-      Array(9).fill(null).map((_, col) => {
-        if (puzzle[row][col] !== null) {
-          // If cell has a number, no pencil marks
-          return Array(9).fill(false);
-        } else {
-          // If cell is empty, show all numbers except those that conflict
-          const conflicts = getConflictingNumbers(row, col);
-          return Array(9).fill(true).map((_, i) => !conflicts.has(i + 1));
-        }
-      })
-    );
+    const newGrid = Array(9)
+      .fill(null)
+      .map((_, row) =>
+        Array(9)
+          .fill(null)
+          .map((_, col) => {
+            if (puzzle[row][col] !== null) {
+              // If cell has a number, no pencil marks
+              return Array(9).fill(false);
+            } else {
+              // If cell is empty, show all numbers except those that conflict
+              const conflicts = getConflictingNumbers(row, col);
+              return Array(9)
+                .fill(true)
+                .map((_, i) => !conflicts.has(i + 1));
+            }
+          })
+      );
     setGrid(newGrid);
-  }, [puzzle]);
+  }, [puzzle, getConflictingNumbers]);
 
   const togglePencilMark = (row: number, col: number, mark: number) => {
     if (puzzle[row][col] !== null) return; // Don't allow toggling if cell has a number
-    
+
     const newGrid = grid.map((r, rowIndex) =>
       r.map((cell, colIndex) =>
         rowIndex === row && colIndex === col
@@ -109,10 +117,16 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
                       <div
                         key={mark}
                         className={`flex items-center justify-center cursor-pointer
-                          ${cell[mark] && showPencilMarks ? "text-gray-500" : "text-transparent"}
+                          ${
+                            cell[mark] && showPencilMarks
+                              ? "text-gray-500"
+                              : "text-transparent"
+                          }
                           hover:bg-gray-100
                         `}
-                        onClick={() => togglePencilMark(rowIndex, colIndex, mark)}
+                        onClick={() =>
+                          togglePencilMark(rowIndex, colIndex, mark)
+                        }
                       >
                         {mark + 1}
                       </div>
