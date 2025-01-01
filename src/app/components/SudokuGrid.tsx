@@ -11,11 +11,9 @@ interface SudokuGridProps {
 }
 
 const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
-  const [showPencilMarks, setShowPencilMarks] = useState(true);
-  const [isPencilMode, setIsPencilMode] = useState(false);
-  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(
-    null
-  );
+  const [showPencilMarks, setShowPencilMarks] = useState<boolean>(true);
+  const [isPencilMode, setIsPencilMode] = useState<boolean>(false);
+  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(null);
   const [guesses, setGuesses] = useState<(number | null)[][]>(
     Array(9)
       .fill(null)
@@ -213,7 +211,8 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
                       }
                       transition-colors
                     `}
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
                       if (puzzle[rowIndex][colIndex] === null) {
                         setSelectedCell([rowIndex, colIndex]);
                       }
