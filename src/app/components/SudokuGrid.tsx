@@ -185,11 +185,13 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
           {grid.map((row, rowIndex) => (
             <div key={rowIndex} className="flex">
               {row.map((cell, colIndex) => {
+                const isSelected = selectedCell?.[0] === rowIndex && selectedCell?.[1] === colIndex;
                 return (
                   <div
                     key={`${rowIndex}-${colIndex}`}
                     className={`
-                      w-12 h-12 bg-white relative
+                      w-12 h-12 relative
+                      ${isSelected ? 'bg-blue-500' : 'bg-white'}
                       ${
                         colIndex % 3 === 2 && colIndex !== 8
                           ? "border-r-2 border-r-gray-800"
@@ -209,7 +211,7 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
                           ? "cursor-pointer hover:bg-blue-50"
                           : "cursor-not-allowed"
                       }
-                      transition-colors
+                      transition-all duration-200
                     `}
                     onClick={(e) => {
                       e.preventDefault();
@@ -227,10 +229,6 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
                       }
                     }}
                   >
-                    {selectedCell?.[0] === rowIndex &&
-                      selectedCell?.[1] === colIndex && (
-                        <div className="absolute inset-0 bg-blue-500 -z-10" />
-                      )}
                     {puzzle[rowIndex][colIndex] !== null ? (
                       <div className="w-full h-full flex items-center justify-center text-2xl font-medium">
                         {puzzle[rowIndex][colIndex]}
