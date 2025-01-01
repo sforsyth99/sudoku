@@ -27,7 +27,7 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
       .map(() =>
         Array(9)
           .fill(null)
-          .map(() => Array(9).fill(true))
+          .map(() => Array(9).fill(false))
       )
   );
 
@@ -207,12 +207,6 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
                           : ""
                       }
                       ${
-                        selectedCell?.[0] === rowIndex &&
-                        selectedCell?.[1] === colIndex
-                          ? "bg-blue-100 ring-2 ring-blue-500"
-                          : ""
-                      }
-                      ${
                         puzzle[rowIndex][colIndex] === null
                           ? "cursor-pointer hover:bg-blue-50"
                           : "cursor-not-allowed"
@@ -234,6 +228,10 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
                       }
                     }}
                   >
+                    {selectedCell?.[0] === rowIndex &&
+                      selectedCell?.[1] === colIndex && (
+                        <div className="absolute inset-0 bg-blue-500 -z-10" />
+                      )}
                     {puzzle[rowIndex][colIndex] !== null ? (
                       <div className="w-full h-full flex items-center justify-center text-2xl font-medium">
                         {puzzle[rowIndex][colIndex]}
