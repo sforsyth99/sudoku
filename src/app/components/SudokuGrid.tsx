@@ -13,7 +13,9 @@ interface SudokuGridProps {
 const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
   const [showPencilMarks, setShowPencilMarks] = useState<boolean>(true);
   const [isPencilMode, setIsPencilMode] = useState<boolean>(false);
-  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(null);
+  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(
+    null
+  );
   const [guesses, setGuesses] = useState<(number | null)[][]>(
     Array(9)
       .fill(null)
@@ -185,13 +187,15 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
           {grid.map((row, rowIndex) => (
             <div key={rowIndex} className="flex">
               {row.map((cell, colIndex) => {
-                const isSelected = selectedCell?.[0] === rowIndex && selectedCell?.[1] === colIndex;
+                const isSelected =
+                  selectedCell?.[0] === rowIndex &&
+                  selectedCell?.[1] === colIndex;
                 return (
                   <div
                     key={`${rowIndex}-${colIndex}`}
                     className={`
                       w-12 h-12 relative
-                      ${isSelected ? 'bg-blue-500' : 'bg-white'}
+                      ${isSelected ? "bg-blue-100" : "bg-white"}
                       ${
                         colIndex % 3 === 2 && colIndex !== 8
                           ? "border-r-2 border-r-gray-800"
@@ -208,7 +212,7 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
                       }
                       ${
                         puzzle[rowIndex][colIndex] === null
-                          ? "cursor-pointer hover:bg-blue-50"
+                          ? "cursor-pointer hover:bg-blue-100"
                           : "cursor-not-allowed"
                       }
                       transition-all duration-200
