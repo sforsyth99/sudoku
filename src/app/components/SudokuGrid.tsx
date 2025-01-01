@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Timer from "./Timer";
+import Keyboard from "./Keyboard";
 
 type PencilMarks = boolean[];
 
@@ -11,6 +12,7 @@ interface SudokuGridProps {
 
 const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
   const [showPencilMarks, setShowPencilMarks] = useState(true);
+  const [isPencilMode, setIsPencilMode] = useState(false);
   const [grid, setGrid] = useState<PencilMarks[][]>(
     Array(9)
       .fill(null)
@@ -22,7 +24,7 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
   );
 
   // Get all numbers that should be removed from pencil marks for a given cell
-  const getConflictingNumbers = (row: number, col: number): Set<number> => {
+  const getConflictingNumbers = useCallback((row: number, col: number): Set<number> => {
     const conflicts = new Set<number>();
 
     // Check row
@@ -46,7 +48,7 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
     }
 
     return conflicts;
-  };
+  }, [puzzle]);
 
   // Initialize pencil marks based on the puzzle
   useEffect(() => {
@@ -71,18 +73,24 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
     setGrid(newGrid);
   }, [puzzle, getConflictingNumbers]);
 
-  const togglePencilMark = (row: number, col: number, mark: number) => {
+  const togglePencilMark = useCallback((row: number, col: number, mark: number) => {
     if (puzzle[row][col] !== null) return; // Don't allow toggling if cell has a number
 
-    const newGrid = grid.map((r, rowIndex) =>
-      r.map((cell, colIndex) =>
-        rowIndex === row && colIndex === col
-          ? cell.map((value, index) => (index === mark ? !value : value))
-          : cell
+    setGrid(prevGrid => 
+      prevGrid.map((r, rowIndex) =>
+        r.map((cell, colIndex) =>
+          rowIndex === row && colIndex === col
+            ? cell.map((value, index) => (index === mark ? !value : value))
+            : cell
+        )
       )
     );
-    setGrid(newGrid);
-  };
+  }, [puzzle]);
+
+  const handleNumberClick = useCallback((number: number | null) => {
+    // TODO: Handle number input based on mode
+    console.log(`Clicked ${number} in ${isPencilMode ? 'pencil' : 'normal'} mode`);
+  }, [isPencilMode]);
 
   return (
     <div className="flex flex-col items-center min-h-screen">
@@ -138,17 +146,34 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
           </React.Fragment>
         ))}
       </div>
-      <div className="mt-4 flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="showPencilMarks"
-          checked={showPencilMarks}
-          onChange={(e) => setShowPencilMarks(e.target.checked)}
-          className="w-4 h-4"
-        />
-        <label htmlFor="showPencilMarks" className="text-lg">
-          Show pencil marks
-        </label>
+      <div className="flex flex-col items-center gap-4 mt-4">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="showPencilMarks"
+              checked={showPencilMarks}
+              onChange={(e) => setShowPencilMarks(e.target.checked)}
+              className="w-4 h-4"
+            />
+            <label htmlFor="showPencilMarks" className="text-lg">
+              Show pencil marks
+            </label>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="pencilMode"
+              checked={isPencilMode}
+              onChange={(e) => setIsPencilMode(e.target.checked)}
+              className="w-4 h-4"
+            />
+            <label htmlFor="pencilMode" className="text-lg">
+              Pencil mark mode
+            </label>
+          </div>
+        </div>
+        <Keyboard isPencilMode={isPencilMode} onNumberClick={handleNumberClick} />
       </div>
     </div>
   );
