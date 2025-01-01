@@ -13,6 +13,10 @@ interface SudokuGridProps {
 const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
   const [showPencilMarks, setShowPencilMarks] = useState(true);
   const [isPencilMode, setIsPencilMode] = useState(false);
+  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(null);
+  const [guesses, setGuesses] = useState<(number | null)[][]>(
+    Array(9).fill(null).map(() => Array(9).fill(null))
+  );
   const [grid, setGrid] = useState<PencilMarks[][]>(
     Array(9)
       .fill(null)
@@ -73,6 +77,66 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
     setGrid(newGrid);
   }, [puzzle, getConflictingNumbers]);
 
+  const handleNumberInput = useCallback((number: number | null) => {
+    if (!selectedCell) return;
+    const [row, col] = selectedCell;
+
+    // Don't modify original puzzle numbers
+    if (puzzle[row][col] !== null) return;
+
+    if (number === null) {
+      // Handle X (clear) button
+      if (!isPencilMode) {
+        setGuesses(prev => {
+          const newGuesses = [...prev];
+          newGuesses[row] = [...newGuesses[row]];
+          newGuesses[row][col] = null;
+          return newGuesses;
+        });
+      }
+      return;
+    }
+
+    if (isPencilMode) {
+      setGrid(prev => 
+        prev.map((r, rowIndex) =>
+          r.map((cell, colIndex) =>
+            rowIndex === row && colIndex === col
+              ? cell.map((value, index) => (index === (number - 1) ? !value : value))
+              : cell
+          )
+        )
+      );
+    } else {
+      setGuesses(prev => {
+        const newGuesses = [...prev];
+        newGuesses[row] = [...newGuesses[row]];
+        newGuesses[row][col] = number;
+        return newGuesses;
+      });
+    }
+  }, [selectedCell, isPencilMode, puzzle]);
+
+  // Handle keyboard input
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedCell) return;
+      
+      if (e.key === "Backspace" || e.key === "Delete" || e.key === "0") {
+        handleNumberInput(null);
+        return;
+      }
+
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= 9) {
+        handleNumberInput(num);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedCell, handleNumberInput]);
+
   const togglePencilMark = useCallback((row: number, col: number, mark: number) => {
     if (puzzle[row][col] !== null) return; // Don't allow toggling if cell has a number
 
@@ -87,11 +151,6 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
     );
   }, [puzzle]);
 
-  const handleNumberClick = useCallback((number: number | null) => {
-    // TODO: Handle number input based on mode
-    console.log(`Clicked ${number} in ${isPencilMode ? 'pencil' : 'normal'} mode`);
-  }, [isPencilMode]);
-
   return (
     <div className="flex flex-col items-center min-h-screen">
       <Timer />
@@ -102,7 +161,7 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
               <div
                 key={`${rowIndex}-${colIndex}`}
                 className={`
-                  w-12 h-12 bg-white
+                  w-12 h-12 bg-white relative
                   ${
                     colIndex % 3 === 2 && colIndex !== 8
                       ? "border-r-2 border-r-gray-800"
@@ -113,28 +172,38 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
                       ? "border-b-2 border-b-gray-800"
                       : ""
                   }
+                  ${
+                    selectedCell?.[0] === rowIndex && selectedCell?.[1] === colIndex
+                      ? "bg-blue-50"
+                      : ""
+                  }
+                  cursor-pointer
+                  hover:bg-blue-50/50
                 `}
+                onClick={() => setSelectedCell([rowIndex, colIndex])}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setSelectedCell([rowIndex, colIndex]);
+                  }
+                }}
               >
                 {puzzle[rowIndex][colIndex] !== null ? (
                   <div className="w-full h-full flex items-center justify-center text-2xl font-medium">
                     {puzzle[rowIndex][colIndex]}
                   </div>
+                ) : guesses[rowIndex][colIndex] !== null ? (
+                  <div className="w-full h-full flex items-center justify-center text-2xl font-medium text-blue-600">
+                    {guesses[rowIndex][colIndex]}
+                  </div>
                 ) : (
-                  <div className="grid grid-cols-3 grid-rows-3 w-full h-full text-[8px]">
+                  <div className="grid grid-cols-3 grid-rows-3 w-full h-full text-[8px] pointer-events-none">
                     {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((mark) => (
                       <div
                         key={mark}
-                        className={`flex items-center justify-center cursor-pointer
-                          ${
-                            cell[mark] && showPencilMarks
-                              ? "text-gray-500"
-                              : "text-transparent"
-                          }
-                          hover:bg-gray-100
+                        className={`flex items-center justify-center
+                          ${cell[mark] && showPencilMarks ? "text-gray-500" : "text-transparent"}
                         `}
-                        onClick={() =>
-                          togglePencilMark(rowIndex, colIndex, mark)
-                        }
                       >
                         {mark + 1}
                       </div>
@@ -173,7 +242,7 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
             </label>
           </div>
         </div>
-        <Keyboard isPencilMode={isPencilMode} onNumberClick={handleNumberClick} />
+        <Keyboard isPencilMode={isPencilMode} onNumberClick={handleNumberInput} />
       </div>
     </div>
   );
