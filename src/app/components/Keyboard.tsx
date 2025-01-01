@@ -7,7 +7,7 @@ interface KeyboardProps {
   onNumberClick: (number: number | null) => void;
 }
 
-const Keyboard: React.FC<KeyboardProps> = ({ isPencilMode, onNumberClick }) => {
+const Keyboard = ({ isPencilMode, onNumberClick }: KeyboardProps) => {
   const topRow = [1, 2, 3, 4, 5];
   const bottomRow = [6, 7, 8, 9, null];
 
@@ -32,7 +32,7 @@ const Keyboard: React.FC<KeyboardProps> = ({ isPencilMode, onNumberClick }) => {
       <div className="flex gap-2">
         {bottomRow.map((num) => (
           <button
-            key={num ?? 'x'}
+            key={num ?? "x"}
             onClick={() => onNumberClick(num)}
             className={`
               w-12 h-12 border rounded-lg

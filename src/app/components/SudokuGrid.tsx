@@ -10,7 +10,7 @@ interface SudokuGridProps {
   puzzle: (number | null)[][];
 }
 
-const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
+const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
   const [showPencilMarks, setShowPencilMarks] = useState(true);
   const [isPencilMode, setIsPencilMode] = useState(false);
   const [selectedCell, setSelectedCell] = useState<[number, number] | null>(
@@ -182,84 +182,90 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
   return (
     <div className="flex flex-col items-center min-h-screen">
       <Timer />
-      <div className="grid grid-cols-9 gap-[1px] bg-gray-300 p-[1px]">
-        {grid.map((row, rowIndex) => (
-          <React.Fragment key={rowIndex}>
-            {row.map((cell, colIndex) => (
-              <div
-                key={`${rowIndex}-${colIndex}`}
-                className={`
-                  w-12 h-12 bg-white relative
-                  ${
-                    colIndex % 3 === 2 && colIndex !== 8
-                      ? "border-r-2 border-r-gray-800"
-                      : ""
-                  }
-                  ${
-                    rowIndex % 3 === 2 && rowIndex !== 8
-                      ? "border-b-2 border-b-gray-800"
-                      : ""
-                  }
-                  ${
-                    selectedCell?.[0] === rowIndex &&
-                    selectedCell?.[1] === colIndex
-                      ? "bg-blue-100 ring-2 ring-blue-500"
-                      : ""
-                  }
-                  ${
-                    puzzle[rowIndex][colIndex] === null
-                      ? "cursor-pointer hover:bg-blue-50"
-                      : "cursor-not-allowed"
-                  }
-                  transition-colors
-                `}
-                onClick={() => {
-                  if (puzzle[rowIndex][colIndex] === null) {
-                    setSelectedCell([rowIndex, colIndex]);
-                  }
-                }}
-                tabIndex={puzzle[rowIndex][colIndex] === null ? 0 : -1}
-                onKeyDown={(e) => {
-                  if (
-                    puzzle[rowIndex][colIndex] === null &&
-                    (e.key === "Enter" || e.key === " ")
-                  ) {
-                    setSelectedCell([rowIndex, colIndex]);
-                  }
-                }}
-              >
-                {puzzle[rowIndex][colIndex] !== null ? (
-                  <div className="w-full h-full flex items-center justify-center text-2xl font-medium">
-                    {puzzle[rowIndex][colIndex]}
-                  </div>
-                ) : guesses[rowIndex][colIndex] !== null ? (
-                  <div className="w-full h-full flex items-center justify-center text-2xl font-medium text-blue-600">
-                    {guesses[rowIndex][colIndex]}
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-3 grid-rows-3 w-full h-full text-[8px] pointer-events-none">
-                    {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((mark) => (
-                      <div
-                        key={mark}
-                        className={`flex items-center justify-center
-                          ${
-                            cell[mark] && showPencilMarks
-                              ? "text-gray-500"
-                              : "text-transparent"
-                          }
-                        `}
-                      >
-                        {mark + 1}
+      <div className="flex flex-col items-center gap-4 mt-8">
+        <div className="border-2 border-gray-800">
+          {grid.map((row, rowIndex) => (
+            <div key={rowIndex} className="flex">
+              {row.map((cell, colIndex) => {
+                return (
+                  <div
+                    key={`${rowIndex}-${colIndex}`}
+                    className={`
+                      w-12 h-12 bg-white relative
+                      ${
+                        colIndex % 3 === 2 && colIndex !== 8
+                          ? "border-r-2 border-r-gray-800"
+                          : colIndex !== 8
+                          ? "border-r border-r-gray-300"
+                          : ""
+                      }
+                      ${
+                        rowIndex % 3 === 2 && rowIndex !== 8
+                          ? "border-b-2 border-b-gray-800"
+                          : rowIndex !== 8
+                          ? "border-b border-b-gray-300"
+                          : ""
+                      }
+                      ${
+                        selectedCell?.[0] === rowIndex &&
+                        selectedCell?.[1] === colIndex
+                          ? "bg-blue-100 ring-2 ring-blue-500"
+                          : ""
+                      }
+                      ${
+                        puzzle[rowIndex][colIndex] === null
+                          ? "cursor-pointer hover:bg-blue-50"
+                          : "cursor-not-allowed"
+                      }
+                      transition-colors
+                    `}
+                    onClick={() => {
+                      if (puzzle[rowIndex][colIndex] === null) {
+                        setSelectedCell([rowIndex, colIndex]);
+                      }
+                    }}
+                    tabIndex={puzzle[rowIndex][colIndex] === null ? 0 : -1}
+                    onKeyDown={(e) => {
+                      if (
+                        puzzle[rowIndex][colIndex] === null &&
+                        (e.key === "Enter" || e.key === " ")
+                      ) {
+                        setSelectedCell([rowIndex, colIndex]);
+                      }
+                    }}
+                  >
+                    {puzzle[rowIndex][colIndex] !== null ? (
+                      <div className="w-full h-full flex items-center justify-center text-2xl font-medium">
+                        {puzzle[rowIndex][colIndex]}
                       </div>
-                    ))}
+                    ) : guesses[rowIndex][colIndex] !== null ? (
+                      <div className="w-full h-full flex items-center justify-center text-2xl font-medium text-blue-600">
+                        {guesses[rowIndex][colIndex]}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-3 grid-rows-3 w-full h-full text-[8px] pointer-events-none">
+                        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((mark) => (
+                          <div
+                            key={mark}
+                            className={`flex items-center justify-center
+                              ${
+                                cell[mark] && showPencilMarks
+                                  ? "text-gray-500"
+                                  : "text-transparent"
+                              }
+                            `}
+                          >
+                            {mark + 1}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            ))}
-          </React.Fragment>
-        ))}
-      </div>
-      <div className="flex flex-col items-center gap-4 mt-4">
+                );
+              })}
+            </div>
+          ))}
+        </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <input
