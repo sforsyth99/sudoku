@@ -174,16 +174,24 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
                   }
                   ${
                     selectedCell?.[0] === rowIndex && selectedCell?.[1] === colIndex
-                      ? "bg-blue-50"
+                      ? "bg-blue-100 ring-2 ring-blue-500"
                       : ""
                   }
-                  cursor-pointer
-                  hover:bg-blue-50/50
+                  ${
+                    puzzle[rowIndex][colIndex] === null
+                      ? "cursor-pointer hover:bg-blue-50"
+                      : "cursor-not-allowed"
+                  }
+                  transition-colors
                 `}
-                onClick={() => setSelectedCell([rowIndex, colIndex])}
-                tabIndex={0}
+                onClick={() => {
+                  if (puzzle[rowIndex][colIndex] === null) {
+                    setSelectedCell([rowIndex, colIndex]);
+                  }
+                }}
+                tabIndex={puzzle[rowIndex][colIndex] === null ? 0 : -1}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+                  if (puzzle[rowIndex][colIndex] === null && (e.key === 'Enter' || e.key === ' ')) {
                     setSelectedCell([rowIndex, colIndex]);
                   }
                 }}
