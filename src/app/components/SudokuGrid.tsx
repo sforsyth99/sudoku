@@ -13,9 +13,13 @@ interface SudokuGridProps {
 const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
   const [showPencilMarks, setShowPencilMarks] = useState(true);
   const [isPencilMode, setIsPencilMode] = useState(false);
-  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(null);
+  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(
+    null
+  );
   const [guesses, setGuesses] = useState<(number | null)[][]>(
-    Array(9).fill(null).map(() => Array(9).fill(null))
+    Array(9)
+      .fill(null)
+      .map(() => Array(9).fill(null))
   );
   const [grid, setGrid] = useState<PencilMarks[][]>(
     Array(9)
@@ -28,31 +32,34 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
   );
 
   // Get all numbers that should be removed from pencil marks for a given cell
-  const getConflictingNumbers = useCallback((row: number, col: number): Set<number> => {
-    const conflicts = new Set<number>();
+  const getConflictingNumbers = useCallback(
+    (row: number, col: number): Set<number> => {
+      const conflicts = new Set<number>();
 
-    // Check row
-    puzzle[row].forEach((num) => {
-      if (num !== null) conflicts.add(num);
-    });
-
-    // Check column
-    puzzle.forEach((r) => {
-      if (r[col] !== null) conflicts.add(r[col]!);
-    });
-
-    // Check 3x3 box
-    const boxRow = Math.floor(row / 3) * 3;
-    const boxCol = Math.floor(col / 3) * 3;
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        const num = puzzle[boxRow + i][boxCol + j];
+      // Check row
+      puzzle[row].forEach((num) => {
         if (num !== null) conflicts.add(num);
-      }
-    }
+      });
 
-    return conflicts;
-  }, [puzzle]);
+      // Check column
+      puzzle.forEach((r) => {
+        if (r[col] !== null) conflicts.add(r[col]!);
+      });
+
+      // Check 3x3 box
+      const boxRow = Math.floor(row / 3) * 3;
+      const boxCol = Math.floor(col / 3) * 3;
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          const num = puzzle[boxRow + i][boxCol + j];
+          if (num !== null) conflicts.add(num);
+        }
+      }
+
+      return conflicts;
+    },
+    [puzzle]
+  );
 
   // Initialize pencil marks based on the puzzle
   useEffect(() => {
@@ -77,51 +84,56 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
     setGrid(newGrid);
   }, [puzzle, getConflictingNumbers]);
 
-  const handleNumberInput = useCallback((number: number | null) => {
-    if (!selectedCell) return;
-    const [row, col] = selectedCell;
+  const handleNumberInput = useCallback(
+    (number: number | null) => {
+      if (!selectedCell) return;
+      const [row, col] = selectedCell;
 
-    // Don't modify original puzzle numbers
-    if (puzzle[row][col] !== null) return;
+      // Don't modify original puzzle numbers
+      if (puzzle[row][col] !== null) return;
 
-    if (number === null) {
-      // Handle X (clear) button
-      if (!isPencilMode) {
-        setGuesses(prev => {
+      if (number === null) {
+        // Handle X (clear) button
+        if (!isPencilMode) {
+          setGuesses((prev) => {
+            const newGuesses = [...prev];
+            newGuesses[row] = [...newGuesses[row]];
+            newGuesses[row][col] = null;
+            return newGuesses;
+          });
+        }
+        return;
+      }
+
+      if (isPencilMode) {
+        setGrid((prev) =>
+          prev.map((r, rowIndex) =>
+            r.map((cell, colIndex) =>
+              rowIndex === row && colIndex === col
+                ? cell.map((value, index) =>
+                    index === number - 1 ? !value : value
+                  )
+                : cell
+            )
+          )
+        );
+      } else {
+        setGuesses((prev) => {
           const newGuesses = [...prev];
           newGuesses[row] = [...newGuesses[row]];
-          newGuesses[row][col] = null;
+          newGuesses[row][col] = number;
           return newGuesses;
         });
       }
-      return;
-    }
-
-    if (isPencilMode) {
-      setGrid(prev => 
-        prev.map((r, rowIndex) =>
-          r.map((cell, colIndex) =>
-            rowIndex === row && colIndex === col
-              ? cell.map((value, index) => (index === (number - 1) ? !value : value))
-              : cell
-          )
-        )
-      );
-    } else {
-      setGuesses(prev => {
-        const newGuesses = [...prev];
-        newGuesses[row] = [...newGuesses[row]];
-        newGuesses[row][col] = number;
-        return newGuesses;
-      });
-    }
-  }, [selectedCell, isPencilMode, puzzle]);
+    },
+    [selectedCell, isPencilMode, puzzle]
+  );
 
   // Handle keyboard input
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!selectedCell) return;
-      
+
       if (e.key === "Backspace" || e.key === "Delete" || e.key === "0") {
         handleNumberInput(null);
         return;
@@ -137,19 +149,22 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedCell, handleNumberInput]);
 
-  const togglePencilMark = useCallback((row: number, col: number, mark: number) => {
-    if (puzzle[row][col] !== null) return; // Don't allow toggling if cell has a number
+  // const togglePencilMark = useCallback(
+  //   (row: number, col: number, mark: number) => {
+  //     if (puzzle[row][col] !== null) return; // Don't allow toggling if cell has a number
 
-    setGrid(prevGrid => 
-      prevGrid.map((r, rowIndex) =>
-        r.map((cell, colIndex) =>
-          rowIndex === row && colIndex === col
-            ? cell.map((value, index) => (index === mark ? !value : value))
-            : cell
-        )
-      )
-    );
-  }, [puzzle]);
+  //     setGrid((prevGrid) =>
+  //       prevGrid.map((r, rowIndex) =>
+  //         r.map((cell, colIndex) =>
+  //           rowIndex === row && colIndex === col
+  //             ? cell.map((value, index) => (index === mark ? !value : value))
+  //             : cell
+  //         )
+  //       )
+  //     );
+  //   },
+  //   [puzzle]
+  // );
 
   return (
     <div className="flex flex-col items-center min-h-screen">
@@ -173,7 +188,8 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
                       : ""
                   }
                   ${
-                    selectedCell?.[0] === rowIndex && selectedCell?.[1] === colIndex
+                    selectedCell?.[0] === rowIndex &&
+                    selectedCell?.[1] === colIndex
                       ? "bg-blue-100 ring-2 ring-blue-500"
                       : ""
                   }
@@ -191,7 +207,10 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
                 }}
                 tabIndex={puzzle[rowIndex][colIndex] === null ? 0 : -1}
                 onKeyDown={(e) => {
-                  if (puzzle[rowIndex][colIndex] === null && (e.key === 'Enter' || e.key === ' ')) {
+                  if (
+                    puzzle[rowIndex][colIndex] === null &&
+                    (e.key === "Enter" || e.key === " ")
+                  ) {
                     setSelectedCell([rowIndex, colIndex]);
                   }
                 }}
@@ -210,7 +229,11 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
                       <div
                         key={mark}
                         className={`flex items-center justify-center
-                          ${cell[mark] && showPencilMarks ? "text-gray-500" : "text-transparent"}
+                          ${
+                            cell[mark] && showPencilMarks
+                              ? "text-gray-500"
+                              : "text-transparent"
+                          }
                         `}
                       >
                         {mark + 1}
@@ -250,7 +273,10 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ puzzle }) => {
             </label>
           </div>
         </div>
-        <Keyboard isPencilMode={isPencilMode} onNumberClick={handleNumberInput} />
+        <Keyboard
+          isPencilMode={isPencilMode}
+          onNumberClick={handleNumberInput}
+        />
       </div>
     </div>
   );
