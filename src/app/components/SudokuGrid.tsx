@@ -110,6 +110,7 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
 
   const handleNumberInput = useCallback(
     (number: number | null) => {
+      console.log("handle number input");
       if (!selectedCell) return;
       const [row, col] = selectedCell;
 
@@ -162,8 +163,9 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
   // Handle keyboard input
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      console.log("handle key down");
       if (!selectedCell) return;
-
+      console.log("selected cell");
       if (e.key === "Backspace" || e.key === "Delete" || e.key === "0") {
         handleNumberInput(null);
         return;
@@ -215,6 +217,7 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
                           ? "cursor-pointer hover:bg-blue-100"
                           : "cursor-not-allowed"
                       }
+                      outline-none
                       transition-all duration-200
                     `}
                     onClick={(e) => {
