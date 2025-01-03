@@ -13,13 +13,17 @@ interface SudokuGridProps {
 const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
   const [showPencilMarks, setShowPencilMarks] = useState<boolean>(true);
   const [isPencilMode, setIsPencilMode] = useState<boolean>(false);
-  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(
-    null
-  );
+  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(null);
   const [guesses, setGuesses] = useState<(number | null)[][]>(
     Array(9)
       .fill(null)
       .map(() => Array(9).fill(null))
+  );
+  const [hasErrors, setHasErrors] = useState<boolean>(false);
+  const [errorCells, setErrorCells] = useState<boolean[][]>(
+    Array(9)
+      .fill(null)
+      .map(() => Array(9).fill(false))
   );
   const [grid, setGrid] = useState<PencilMarks[][]>(
     Array(9)
@@ -70,6 +74,36 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
     [puzzle]
   );
 
+  // Check if a number would create a conflict in row, column, or box
+  const checkForConflicts = useCallback((row: number, col: number, num: number): boolean => {
+    // Check row
+    for (let c = 0; c < 9; c++) {
+      if (c !== col) {
+        if (puzzle[row][c] === num || guesses[row][c] === num) return true;
+      }
+    }
+
+    // Check column
+    for (let r = 0; r < 9; r++) {
+      if (r !== row) {
+        if (puzzle[r][col] === num || guesses[r][col] === num) return true;
+      }
+    }
+
+    // Check 3x3 box
+    const boxRow = Math.floor(row / 3) * 3;
+    const boxCol = Math.floor(col / 3) * 3;
+    for (let r = boxRow; r < boxRow + 3; r++) {
+      for (let c = boxCol; c < boxCol + 3; c++) {
+        if (r !== row || c !== col) {
+          if (puzzle[r][c] === num || guesses[r][c] === num) return true;
+        }
+      }
+    }
+
+    return false;
+  }, [puzzle, guesses]);
+
   // Update pencil marks for all cells
   const updateAllPencilMarks = useCallback(
     (currentGuesses: (number | null)[][]) => {
@@ -103,10 +137,35 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
     [puzzle, getConflictingNumbers]
   );
 
+  // Update error states for all cells
+  const updateErrors = useCallback(() => {
+    const newErrorCells = Array(9)
+      .fill(null)
+      .map(() => Array(9).fill(false));
+    let hasAnyError = false;
+
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (guesses[row][col] !== null && checkForConflicts(row, col, guesses[row][col]!)) {
+          newErrorCells[row][col] = true;
+          hasAnyError = true;
+        }
+      }
+    }
+
+    setErrorCells(newErrorCells);
+    setHasErrors(hasAnyError);
+  }, [guesses, checkForConflicts]);
+
   // Initialize pencil marks
   useEffect(() => {
     updateAllPencilMarks(guesses);
   }, [puzzle, updateAllPencilMarks]);
+
+  // Update errors whenever guesses change
+  useEffect(() => {
+    updateErrors();
+  }, [guesses, updateErrors]);
 
   const handleNumberInput = useCallback(
     (number: number | null) => {
@@ -190,6 +249,7 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
                 const isSelected =
                   selectedCell?.[0] === rowIndex &&
                   selectedCell?.[1] === colIndex;
+                const isError = errorCells[rowIndex][colIndex];
                 return (
                   <div
                     key={`${rowIndex}-${colIndex}`}
@@ -239,7 +299,7 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
                         {puzzle[rowIndex][colIndex]}
                       </div>
                     ) : guesses[rowIndex][colIndex] !== null ? (
-                      <div className="w-full h-full flex items-center justify-center text-2xl font-medium text-blue-600">
+                      <div className={`w-full h-full flex items-center justify-center text-2xl font-medium ${isError ? "text-red-600" : "text-blue-600"}`}>
                         {guesses[rowIndex][colIndex]}
                       </div>
                     ) : (
