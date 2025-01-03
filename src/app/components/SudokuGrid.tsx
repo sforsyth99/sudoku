@@ -215,6 +215,7 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
                           ? "cursor-pointer hover:bg-blue-100"
                           : "cursor-not-allowed"
                       }
+                      outline-none 
                       transition-all duration-200
                     `}
                     onClick={(e) => {
