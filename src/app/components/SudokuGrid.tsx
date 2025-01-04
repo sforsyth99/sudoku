@@ -36,6 +36,15 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
           .map(() => Array(9).fill(false))
       )
   );
+  const [manualPencilMarks, setManualPencilMarks] = useState<boolean[][][]>(
+    Array(9)
+      .fill(null)
+      .map(() =>
+        Array(9)
+          .fill(null)
+          .map(() => Array(9).fill(false))
+      )
+  );
   const [isComplete, setIsComplete] = useState<boolean>(false);
 
   // Get all numbers that should be removed from pencil marks for a given cell
@@ -113,24 +122,24 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
   // Update pencil marks for all cells
   const updateAllPencilMarks = useCallback(
     (currentGuesses: (number | null)[][]) => {
-      setGrid(() => {
-        const newGrid = Array(9)
-          .fill(null)
-          .map(() =>
-            Array(9)
-              .fill(null)
-              .map(() => Array(9).fill(true))
-          );
+      setGrid((prevGrid) => {
+        const newGrid = prevGrid.map((row) => row.map((cell) => [...cell]));
 
-        // Update each empty cell's pencil marks
         for (let row = 0; row < 9; row++) {
           for (let col = 0; col < 9; col++) {
+            // Skip if the cell has a puzzle number or guess
             if (
-              puzzle[row][col] === null &&
-              currentGuesses[row][col] === null
+              puzzle[row][col] !== null ||
+              currentGuesses[row][col] !== null
             ) {
-              const conflicts = getConflictingNumbers(row, col, currentGuesses);
-              for (let num = 1; num <= 9; num++) {
+              continue;
+            }
+
+            const conflicts = getConflictingNumbers(row, col, currentGuesses);
+
+            // Only update pencil marks that haven't been manually modified
+            for (let num = 1; num <= 9; num++) {
+              if (!manualPencilMarks[row][col][num - 1]) {
                 newGrid[row][col][num - 1] = !conflicts.has(num);
               }
             }
@@ -140,7 +149,7 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
         return newGrid;
       });
     },
-    [puzzle, getConflictingNumbers]
+    [puzzle, getConflictingNumbers, manualPencilMarks]
   );
 
   // Update errors and completion
@@ -175,10 +184,12 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
     }
   }, [guesses, puzzle, checkForConflicts]);
 
-  // Initialize pencil marks
+  // Initialize pencil marks only when component mounts or puzzle changes
   useEffect(() => {
-    updateAllPencilMarks(guesses);
-  }, [puzzle, updateAllPencilMarks, guesses]);
+    if (puzzle) {
+      updateAllPencilMarks(guesses);
+    }
+  }, [puzzle, updateAllPencilMarks]);
 
   // Update errors and completion whenever guesses change
   useEffect(() => {
@@ -213,23 +224,22 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
       }
 
       if (isPencilMode) {
-        setGrid((prev) =>
-          prev.map((r, rowIndex) =>
-            r.map((cell, colIndex) =>
-              rowIndex === row && colIndex === col
-                ? cell.map((value, index) =>
-                    index === number - 1 ? !value : value
-                  )
-                : cell
-            )
-          )
-        );
+        setGrid((prevGrid) => {
+          const newGrid = prevGrid.map((row) => row.map((cell) => [...cell]));
+          newGrid[row][col][number! - 1] = !newGrid[row][col][number! - 1];
+          return newGrid;
+        });
+
+        setManualPencilMarks((prev) => {
+          const newManual = prev.map((row) => row.map((cell) => [...cell]));
+          newManual[row][col][number! - 1] = true;
+          return newManual;
+        });
       } else {
         const newGuesses = guesses.map((r, i) =>
           i === row ? r.map((c, j) => (j === col ? number : c)) : [...r]
         );
         setGuesses(newGuesses);
-        // Update pencil marks after making a guess
         updateAllPencilMarks(newGuesses);
       }
     },
