@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useIntl } from "react-intl";
 
 interface TimerProps {
   isRunning: boolean;
@@ -8,6 +9,7 @@ interface TimerProps {
 
 const Timer = ({ isRunning }: TimerProps) => {
   const [seconds, setSeconds] = useState(0);
+  const intl = useIntl();
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -34,7 +36,12 @@ const Timer = ({ isRunning }: TimerProps) => {
   };
 
   return (
-    <div className="text-2xl font-medium mb-4">Time: {formatTime(seconds)}</div>
+    <div className="text-2xl font-medium mb-4">
+      {intl.formatMessage(
+        { id: "timer.label" },
+        { time: formatTime(seconds) }
+      )}
+    </div>
   );
 };
 
