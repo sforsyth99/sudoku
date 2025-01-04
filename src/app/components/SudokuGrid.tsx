@@ -36,7 +36,7 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
           .map(() => Array(9).fill(false))
       )
   );
-  const [manualPencilMarks, setManualPencilMarks] = useState<boolean[][]>(
+  const [manualPencilMarks, setManualPencilMarks] = useState<boolean[][][]>(
     Array(9)
       .fill(null)
       .map(() =>
@@ -324,8 +324,6 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
                         (e.key === "Enter" || e.key === " ")
                       ) {
                         setSelectedCell([rowIndex, colIndex]);
-
-                        // 'ai ah' -Jonathan 2025
                       }
                     }}
                   >
