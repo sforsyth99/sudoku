@@ -1,0 +1,9 @@
+{
+  "app.title": "Sudoku",
+  "keyboard.pencilMode": "Pencil Mode",
+  "keyboard.clear": "Clear",
+  "timer.label": "Time: {time}",
+  "game.congratulations": "Congratulations! You have completed the puzzle!",
+  "game.showPencilMarks": "Show pencil marks",
+  "game.pencilMode": "Pencil mark mode"
+}

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Timer from "./Timer";
 import Keyboard from "./Keyboard";
+import { useIntl } from "react-intl";
 
 type PencilMarks = boolean[];
 
@@ -11,6 +12,7 @@ interface SudokuGridProps {
 }
 
 const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
+  const intl = useIntl();
   const [showPencilMarks, setShowPencilMarks] = useState<boolean>(true);
   const [isPencilMode, setIsPencilMode] = useState<boolean>(false);
   const [selectedCell, setSelectedCell] = useState<[number, number] | null>(
@@ -270,7 +272,7 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       {isComplete && (
         <div className="text-2xl font-bold text-green-600 mb-4">
-          🎉 Congratulations! You have completed the puzzle! 🎉
+          {intl.formatMessage({ id: "game.congratulations" })}
         </div>
       )}
       <Timer isRunning={!isComplete} />
@@ -373,7 +375,7 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
               className="w-4 h-4"
             />
             <label htmlFor="showPencilMarks" className="text-lg">
-              Show pencil marks
+              {intl.formatMessage({ id: "game.showPencilMarks" })}
             </label>
           </div>
           <div className="flex items-center gap-2">
@@ -385,7 +387,7 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
               className="w-4 h-4"
             />
             <label htmlFor="pencilMode" className="text-lg">
-              Pencil mark mode
+              {intl.formatMessage({ id: "game.pencilMode" })}
             </label>
           </div>
         </div>
