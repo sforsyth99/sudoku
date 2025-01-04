@@ -36,6 +36,7 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
           .map(() => Array(9).fill(false))
       )
   );
+  const [isComplete, setIsComplete] = useState<boolean>(false);
 
   // Get all numbers that should be removed from pencil marks for a given cell
   const getConflictingNumbers = useCallback(
@@ -142,38 +143,47 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
     [puzzle, getConflictingNumbers]
   );
 
-  // Update error states for all cells
-  const updateErrors = useCallback(() => {
+  // Update errors and completion
+  const checkCompletionAndErrors = useCallback(() => {
+    // Check for errors first
+    let hasAnyError = false;
     const newErrorCells = Array(9)
       .fill(null)
       .map(() => Array(9).fill(false));
-    // let hasAnyError = false;
 
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
-        if (
-          guesses[row][col] !== null &&
-          checkForConflicts(row, col, guesses[row][col]!)
-        ) {
-          newErrorCells[row][col] = true;
-          // hasAnyError = true;
+        if (guesses[row][col] !== null) {
+          const hasConflict = checkForConflicts(row, col, guesses[row][col]!);
+          newErrorCells[row][col] = hasConflict;
+          if (hasConflict) hasAnyError = true;
         }
       }
     }
 
     setErrorCells(newErrorCells);
-    // setHasErrors(hasAnyError);
-  }, [guesses, checkForConflicts]);
+
+    // Check completion only if there are no errors
+    if (!hasAnyError) {
+      const allCellsFilled = guesses.every((row, i) =>
+        row.every((cell, j) => puzzle[i][j] !== null || cell !== null)
+      );
+
+      if (allCellsFilled) {
+        setIsComplete(true);
+      }
+    }
+  }, [guesses, puzzle, checkForConflicts]);
 
   // Initialize pencil marks
   useEffect(() => {
     updateAllPencilMarks(guesses);
   }, [puzzle, updateAllPencilMarks, guesses]);
 
-  // Update errors whenever guesses change
+  // Update errors and completion whenever guesses change
   useEffect(() => {
-    updateErrors();
-  }, [guesses, updateErrors]);
+    checkCompletionAndErrors();
+  }, [guesses, checkCompletionAndErrors]);
 
   const handleNumberInput = useCallback(
     (number: number | null) => {
@@ -247,8 +257,13 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
   }, [selectedCell, handleNumberInput]);
 
   return (
-    <div className="flex flex-col items-center min-h-screen">
-      <Timer />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+      {isComplete && (
+        <div className="text-2xl font-bold text-green-600 mb-4">
+          🎉 Congratulations! You've completed the puzzle! 🎉
+        </div>
+      )}
+      <Timer isRunning={!isComplete} />
       <div className="flex flex-col items-center gap-4 mt-8">
         <div className="border-2 border-gray-800">
           {grid.map((row, rowIndex) => (
