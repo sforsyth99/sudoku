@@ -260,7 +260,7 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       {isComplete && (
         <div className="text-2xl font-bold text-green-600 mb-4">
-          🎉 Congratulations! You've completed the puzzle! 🎉
+          🎉 Congratulations! You have completed the puzzle! 🎉
         </div>
       )}
       <Timer isRunning={!isComplete} />
