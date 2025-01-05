@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 
-function generateEmptyGrid(): number[][] {
+function generateEmptyGrid(): (number | null)[][] {
   return Array(9).fill(null).map(() => Array(9).fill(0));
 }
 
-function isValid(grid: number[][], row: number, col: number, num: number): boolean {
+function isValid(grid: (number | null)[][], row: number, col: number, num: number): boolean {
   // Check row
   for (let x = 0; x < 9; x++) {
     if (grid[row][x] === num) return false;
@@ -27,7 +27,7 @@ function isValid(grid: number[][], row: number, col: number, num: number): boole
   return true;
 }
 
-function solveSudoku(grid: number[][]): boolean {
+function solveSudoku(grid: (number | null)[][]): boolean {
   let row = -1;
   let col = -1;
   let isEmpty = false;
