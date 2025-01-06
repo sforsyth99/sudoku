@@ -93,7 +93,20 @@ function countSolutions(grid: (number | null)[][], solutions: { count: number } 
   return solutions.count;
 }
 
-function generatePuzzle(): (number | null)[][] {
+type Difficulty = 'easy' | 'medium' | 'hard';
+
+function getDifficultySettings(difficulty: Difficulty): { cellsToRemove: number } {
+  switch (difficulty) {
+    case 'easy':
+      return { cellsToRemove: 35 };
+    case 'medium':
+      return { cellsToRemove: 45 };
+    case 'hard':
+      return { cellsToRemove: 55 };
+  }
+}
+
+function generatePuzzle(difficulty: Difficulty = 'easy'): (number | null)[][] {
   const grid = generateEmptyGrid();
   
   // Fill diagonal 3x3 boxes
@@ -123,10 +136,10 @@ function generatePuzzle(): (number | null)[][] {
   }
   
   let cellsRemoved = 0;
-  const targetCellsToRemove = 45; // Adjust difficulty by changing this number
+  const { cellsToRemove } = getDifficultySettings(difficulty);
   
   for (const [row, col] of positions) {
-    if (cellsRemoved >= targetCellsToRemove) break;
+    if (cellsRemoved >= cellsToRemove) break;
     
     const temp = puzzle[row][col];
     puzzle[row][col] = null;
@@ -145,8 +158,10 @@ function generatePuzzle(): (number | null)[][] {
   return puzzle;
 }
 
-export async function GET() {
-  const puzzle = generatePuzzle();
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const difficulty = (searchParams.get('difficulty') || 'easy') as Difficulty;
+  const puzzle = generatePuzzle(difficulty);
   return NextResponse.json({ puzzle });
 }
 
