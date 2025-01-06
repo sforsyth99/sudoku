@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import styles from "./Keyboard.module.css";
 
 interface KeyboardProps {
   isPencilMode: boolean;
@@ -12,34 +13,24 @@ const Keyboard = ({ isPencilMode, onNumberClick }: KeyboardProps) => {
   const bottomRow = [6, 7, 8, 9, null];
 
   return (
-    <div className="flex flex-col gap-2 mt-8">
-      <div className="flex gap-2">
+    <div className={styles.keyboard}>
+      <div className={styles.row}>
         {topRow.map((num) => (
           <button
             key={num}
             onClick={() => onNumberClick(num)}
-            className={`
-              w-12 h-12 border rounded-lg
-              flex items-center justify-center
-              hover:bg-gray-100 active:bg-gray-200
-              ${isPencilMode ? "text-sm" : "text-2xl font-medium"}
-            `}
+            className={`${styles.button} ${isPencilMode ? styles.pencilMode : ''}`}
           >
             {num}
           </button>
         ))}
       </div>
-      <div className="flex gap-2">
+      <div className={styles.row}>
         {bottomRow.map((num) => (
           <button
             key={num ?? "x"}
             onClick={() => onNumberClick(num)}
-            className={`
-              w-12 h-12 border rounded-lg
-              flex items-center justify-center
-              hover:bg-gray-100 active:bg-gray-200
-              ${isPencilMode ? "text-sm" : "text-2xl font-medium"}
-            `}
+            className={`${styles.button} ${isPencilMode ? styles.pencilMode : ''}`}
           >
             {num === null ? "X" : num}
           </button>

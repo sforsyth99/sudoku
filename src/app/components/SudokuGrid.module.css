@@ -1,0 +1,133 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  padding: 1rem;
+}
+
+.congratulations {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #059669;
+  margin-bottom: 1rem;
+}
+
+.gridContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.grid {
+  border: 2px solid #1f2937;
+}
+
+.row {
+  display: flex;
+}
+
+.cell {
+  width: 3rem;
+  height: 3rem;
+  position: relative;
+  background-color: white;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.cell:hover {
+  background-color: #dbeafe;
+}
+
+.cellSelected {
+  background-color: #dbeafe;
+}
+
+.cellDisabled {
+  cursor: not-allowed;
+}
+
+.cellEnabled {
+  cursor: pointer;
+}
+
+.cellBorderRight {
+  border-right: 1px solid #d1d5db;
+}
+
+.cellBorderRightThick {
+  border-right: 2px solid #1f2937;
+}
+
+.cellBorderBottom {
+  border-bottom: 1px solid #d1d5db;
+}
+
+.cellBorderBottomThick {
+  border-bottom: 2px solid #1f2937;
+}
+
+.number {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.guess {
+  color: #2563eb;
+}
+
+.guessError {
+  color: #dc2626;
+}
+
+.pencilGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  font-size: 0.5rem;
+  pointer-events: none;
+}
+
+.pencilMark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+}
+
+.pencilMarkHidden {
+  color: transparent;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.controlGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox {
+  width: 1rem;
+  height: 1rem;
+}
+
+.label {
+  font-size: 1.125rem;
+}

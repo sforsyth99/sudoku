@@ -5,5 +5,12 @@
   "timer.label": "Time: {time}",
   "game.congratulations": "Congratulations! You have completed the puzzle!",
   "game.showPencilMarks": "Show pencil marks",
-  "game.pencilMode": "Pencil mark mode"
+  "game.pencilMode": "Pencil mark mode",
+  "game.loading": "Loading new puzzle...",
+  "game.difficulty.easy": "Easy",
+  "game.difficulty.medium": "Medium",
+  "game.difficulty.hard": "Hard",
+  "game.newPuzzle": "New Puzzle",
+  "game.solve": "Solve Puzzle",
+  "game.solving": "Solving..."
 }
