@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, Request } from 'next/server';
 
 function generateEmptyGrid(): (number | null)[][] {
   return Array(9).fill(null).map(() => Array(9).fill(0));
@@ -94,4 +94,18 @@ function generatePuzzle(): (number | null)[][] {
 export async function GET() {
   const puzzle = generatePuzzle();
   return NextResponse.json({ puzzle });
+}
+
+export async function POST(request: Request) {
+  const body = await request.json();
+  const puzzleToSolve = body.puzzle;
+  
+  // Create a copy of the puzzle for solving
+  const grid = puzzleToSolve.map((row: (number | null)[]) => 
+    row.map(cell => cell === null ? 0 : cell)
+  );
+  
+  solveSudoku(grid);
+  
+  return NextResponse.json({ solution: grid });
 }
