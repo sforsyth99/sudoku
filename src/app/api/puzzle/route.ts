@@ -1,4 +1,4 @@
-import { NextResponse, Request } from 'next/server';
+import { NextResponse } from 'next/server';
 
 function generateEmptyGrid(): (number | null)[][] {
   return Array(9).fill(null).map(() => Array(9).fill(0));
