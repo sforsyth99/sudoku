@@ -1,15 +1,18 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from "react";
+import { useIntl } from "react-intl";
 import SudokuGrid from "./SudokuGrid";
+import styles from "./Game.module.css";
 
-type Difficulty = 'easy' | 'medium' | 'hard';
+type Difficulty = "easy" | "medium" | "hard";
 
 export default function Game() {
+  const intl = useIntl();
   const [puzzle, setPuzzle] = useState<(number | null)[][]>([]);
   const [loading, setLoading] = useState(true);
   const [solving, setSolving] = useState(false);
-  const [difficulty, setDifficulty] = useState<Difficulty>('easy');
+  const [difficulty, setDifficulty] = useState<Difficulty>("easy");
 
   const fetchNewPuzzle = async () => {
     setLoading(true);
@@ -18,7 +21,7 @@ export default function Game() {
       const data = await response.json();
       setPuzzle(data.puzzle);
     } catch (error) {
-      console.error('Error fetching puzzle:', error);
+      console.error("Error fetching puzzle:", error);
     }
     setLoading(false);
   };
@@ -26,17 +29,17 @@ export default function Game() {
   const solvePuzzle = async () => {
     setSolving(true);
     try {
-      const response = await fetch('/api/puzzle', {
-        method: 'POST',
+      const response = await fetch("/api/puzzle", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ puzzle }),
       });
       const data = await response.json();
       setPuzzle(data.solution);
     } catch (error) {
-      console.error('Error solving puzzle:', error);
+      console.error("Error solving puzzle:", error);
     }
     setSolving(false);
   };
@@ -46,38 +49,40 @@ export default function Game() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-8 items-center">
+    <div className={styles.container}>
       {loading ? (
-        <div>Loading new puzzle...</div>
+        <div>{intl.formatMessage({ id: "game.loading" })}</div>
       ) : (
         <>
-          <div className="flex gap-4 mb-4">
+          <div className={styles.controls}>
             <select
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value as Difficulty)}
-              className="px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={styles.select}
               disabled={solving}
             >
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
+              <option value="easy">{intl.formatMessage({ id: "game.difficulty.easy" })}</option>
+              <option value="medium">{intl.formatMessage({ id: "game.difficulty.medium" })}</option>
+              <option value="hard">{intl.formatMessage({ id: "game.difficulty.hard" })}</option>
             </select>
           </div>
           <SudokuGrid puzzle={puzzle} />
-          <div className="flex gap-4">
+          <div className={styles.controls}>
             <button
               onClick={fetchNewPuzzle}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              className={styles.button}
               disabled={solving}
             >
-              New Puzzle
+              {intl.formatMessage({ id: "game.newPuzzle" })}
             </button>
             <button
               onClick={solvePuzzle}
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+              className={styles.button}
               disabled={solving}
             >
-              {solving ? 'Solving...' : 'Solve Puzzle'}
+              {intl.formatMessage({ 
+                id: solving ? "game.solving" : "game.solve"
+              })}
             </button>
           </div>
         </>

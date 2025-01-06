@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Timer from "./Timer";
 import Keyboard from "./Keyboard";
 import { useIntl } from "react-intl";
+import styles from "./SudokuGrid.module.css";
 
 type PencilMarks = boolean[];
 
@@ -269,90 +270,70 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
   }, [selectedCell, handleNumberInput]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+    <div className={styles.container}>
       {isComplete && (
-        <div className="text-2xl font-bold text-green-600 mb-4">
+        <div className={styles.congratulations}>
           {intl.formatMessage({ id: "game.congratulations" })}
         </div>
       )}
       <Timer isRunning={!isComplete} />
-      <div className="flex flex-col items-center gap-4 mt-8">
-        <div className="border-2 border-gray-800">
+      <div className={styles.gridContainer}>
+        <div className={styles.grid}>
           {grid.map((row, rowIndex) => (
-            <div key={rowIndex} className="flex">
+            <div key={rowIndex} className={styles.row}>
               {row.map((cell, colIndex) => {
                 const isSelected =
                   selectedCell?.[0] === rowIndex &&
                   selectedCell?.[1] === colIndex;
                 const isError = errorCells[rowIndex][colIndex];
+                const isOriginalNumber = puzzle[rowIndex][colIndex] !== null;
+
+                const cellClasses = [
+                  styles.cell,
+                  isSelected ? styles.cellSelected : '',
+                  isOriginalNumber ? styles.cellDisabled : styles.cellEnabled,
+                  colIndex % 3 === 2 && colIndex !== 8 ? styles.cellBorderRightThick : 
+                    colIndex !== 8 ? styles.cellBorderRight : '',
+                  rowIndex % 3 === 2 && rowIndex !== 8 ? styles.cellBorderBottomThick :
+                    rowIndex !== 8 ? styles.cellBorderBottom : ''
+                ].filter(Boolean).join(' ');
+
                 return (
                   <div
                     key={`${rowIndex}-${colIndex}`}
-                    className={`
-                      w-12 h-12 relative
-                      ${isSelected ? "bg-blue-100" : "bg-white"}
-                      ${
-                        colIndex % 3 === 2 && colIndex !== 8
-                          ? "border-r-2 border-r-gray-800"
-                          : colIndex !== 8
-                          ? "border-r border-r-gray-300"
-                          : ""
-                      }
-                      ${
-                        rowIndex % 3 === 2 && rowIndex !== 8
-                          ? "border-b-2 border-b-gray-800"
-                          : rowIndex !== 8
-                          ? "border-b border-b-gray-300"
-                          : ""
-                      }
-                      ${
-                        puzzle[rowIndex][colIndex] === null
-                          ? "cursor-pointer hover:bg-blue-100"
-                          : "cursor-not-allowed"
-                      }
-                      outline-none 
-                      transition-all duration-200
-                    `}
+                    className={cellClasses}
                     onClick={(e) => {
                       e.preventDefault();
-                      if (puzzle[rowIndex][colIndex] === null) {
+                      if (!isOriginalNumber) {
                         setSelectedCell([rowIndex, colIndex]);
                       }
                     }}
-                    tabIndex={puzzle[rowIndex][colIndex] === null ? 0 : -1}
+                    tabIndex={!isOriginalNumber ? 0 : -1}
                     onKeyDown={(e) => {
                       if (
-                        puzzle[rowIndex][colIndex] === null &&
+                        !isOriginalNumber &&
                         (e.key === "Enter" || e.key === " ")
                       ) {
                         setSelectedCell([rowIndex, colIndex]);
                       }
                     }}
                   >
-                    {puzzle[rowIndex][colIndex] !== null ? (
-                      <div className="w-full h-full flex items-center justify-center text-2xl font-medium">
+                    {isOriginalNumber ? (
+                      <div className={styles.number}>
                         {puzzle[rowIndex][colIndex]}
                       </div>
                     ) : guesses[rowIndex][colIndex] !== null ? (
-                      <div
-                        className={`w-full h-full flex items-center justify-center text-2xl font-medium ${
-                          isError ? "text-red-600" : "text-blue-600"
-                        }`}
-                      >
+                      <div className={`${styles.number} ${isError ? styles.guessError : styles.guess}`}>
                         {guesses[rowIndex][colIndex]}
                       </div>
                     ) : (
-                      <div className="grid grid-cols-3 grid-rows-3 w-full h-full text-[8px] pointer-events-none">
+                      <div className={styles.pencilGrid}>
                         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((mark) => (
                           <div
                             key={mark}
-                            className={`flex items-center justify-center
-                              ${
-                                cell[mark] && showPencilMarks
-                                  ? "text-gray-500"
-                                  : "text-transparent"
-                              }
-                            `}
+                            className={`${styles.pencilMark} ${
+                              cell[mark] && showPencilMarks ? '' : styles.pencilMarkHidden
+                            }`}
                           >
                             {mark + 1}
                           </div>
@@ -365,28 +346,28 @@ const SudokuGrid = ({ puzzle }: SudokuGridProps) => {
             </div>
           ))}
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
+        <div className={styles.controls}>
+          <div className={styles.controlGroup}>
             <input
               type="checkbox"
               id="showPencilMarks"
               checked={showPencilMarks}
               onChange={(e) => setShowPencilMarks(e.target.checked)}
-              className="w-4 h-4"
+              className={styles.checkbox}
             />
-            <label htmlFor="showPencilMarks" className="text-lg">
+            <label htmlFor="showPencilMarks" className={styles.label}>
               {intl.formatMessage({ id: "game.showPencilMarks" })}
             </label>
           </div>
-          <div className="flex items-center gap-2">
+          <div className={styles.controlGroup}>
             <input
               type="checkbox"
               id="pencilMode"
               checked={isPencilMode}
               onChange={(e) => setIsPencilMode(e.target.checked)}
-              className="w-4 h-4"
+              className={styles.checkbox}
             />
-            <label htmlFor="pencilMode" className="text-lg">
+            <label htmlFor="pencilMode" className={styles.label}>
               {intl.formatMessage({ id: "game.pencilMode" })}
             </label>
           </div>

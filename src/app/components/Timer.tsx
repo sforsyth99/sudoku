@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useIntl } from "react-intl";
+import styles from "./Timer.module.css";
 
 interface TimerProps {
   isRunning: boolean;
@@ -36,7 +37,7 @@ const Timer = ({ isRunning }: TimerProps) => {
   };
 
   return (
-    <div className="text-2xl font-medium mb-4">
+    <div className={styles.timer}>
       {intl.formatMessage(
         { id: "timer.label" },
         { time: formatTime(seconds) }
