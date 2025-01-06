@@ -1,9 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ['swagger-ui-react'],
-  output: 'standalone',
   typescript: {
     ignoreBuildErrors: true
+  },
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false
+    };
+    return config;
   }
 }
 
