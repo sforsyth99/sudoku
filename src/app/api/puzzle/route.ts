@@ -1,5 +1,29 @@
 import { NextResponse } from 'next/server';
 
+/**
+ * @swagger
+ * /api/puzzle:
+ *   get:
+ *     summary: Generate a new Sudoku puzzle
+ *     description: Generates a new valid Sudoku puzzle with a unique solution
+ *     responses:
+ *       200:
+ *         description: A new Sudoku puzzle
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 puzzle:
+ *                   type: array
+ *                   items:
+ *                     type: array
+ *                     items:
+ *                       type: integer
+ *                       nullable: true
+ *                   description: 9x9 grid where null represents empty cells
+ */
+
 function generateEmptyGrid(): (number | null)[][] {
   return Array(9).fill(null).map(() => Array(9).fill(0));
 }
@@ -144,6 +168,44 @@ function generatePuzzle(): (number | null)[][] {
   
   return puzzle;
 }
+
+/**
+ * @swagger
+ * /api/puzzle:
+ *   post:
+ *     summary: Solve a Sudoku puzzle
+ *     description: Takes an existing Sudoku puzzle and returns its solution
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               puzzle:
+ *                 type: array
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     type: integer
+ *                     nullable: true
+ *                 description: 9x9 grid where null represents empty cells
+ *     responses:
+ *       200:
+ *         description: The solved puzzle
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 solution:
+ *                   type: array
+ *                   items:
+ *                     type: array
+ *                     items:
+ *                       type: integer
+ *                   description: 9x9 grid with the complete solution
+ */
 
 export async function GET() {
   const puzzle = generatePuzzle();
