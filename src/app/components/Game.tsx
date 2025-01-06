@@ -3,15 +3,18 @@
 import { useState, useEffect } from "react";
 import SudokuGrid from "./SudokuGrid";
 
+type Difficulty = 'easy' | 'medium' | 'hard';
+
 export default function Game() {
   const [puzzle, setPuzzle] = useState<(number | null)[][]>([]);
   const [loading, setLoading] = useState(true);
   const [solving, setSolving] = useState(false);
+  const [difficulty, setDifficulty] = useState<Difficulty>('easy');
 
   const fetchNewPuzzle = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/puzzle');
+      const response = await fetch(`/api/puzzle?difficulty=${difficulty}`);
       const data = await response.json();
       setPuzzle(data.puzzle);
     } catch (error) {
@@ -48,6 +51,18 @@ export default function Game() {
         <div>Loading new puzzle...</div>
       ) : (
         <>
+          <div className="flex gap-4 mb-4">
+            <select
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value as Difficulty)}
+              className="px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={solving}
+            >
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
           <SudokuGrid puzzle={puzzle} />
           <div className="flex gap-4">
             <button
