@@ -1,36 +1,38 @@
 .container {
-    padding: 2rem;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  .controls {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  
-  .select {
-    padding: 0.5rem 1rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.25rem;
-    background-color: white;
-  }
-  
-  .button {
-    padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
-    background-color: #48bb78;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  
-  .button:hover {
-    background-color: #38a169;
-  }
-  
-  .button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.select {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--grid-border);
+  border-radius: 0.25rem;
+  background-color: var(--keyboard-bg);
+  color: var(--keyboard-text);
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  background-color: var(--primary);
+  color: var(--background);
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.button:hover {
+  opacity: 0.9;
+}
+
+.button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

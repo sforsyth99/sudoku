@@ -13,25 +13,28 @@
 .button {
   width: 3rem;
   height: 3rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--grid-border);
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
   font-weight: 500;
-  transition: background-color 0.2s;
+  background-color: var(--keyboard-bg);
+  color: var(--keyboard-text);
+  transition: all 0.2s;
 }
 
 .button:hover {
-  background-color: #f3f4f6;
+  background-color: var(--cell-highlighted);
 }
 
 .button:active {
-  background-color: #e5e7eb;
+  background-color: var(--cell-selected);
 }
 
 .pencilMode {
   font-size: 0.875rem;
   font-weight: normal;
+  color: var(--secondary);
 }

@@ -1,0 +1,54 @@
+:root {
+  /* Light theme colors */
+  --light-background: #ffffff;
+  --light-text: #1a1a1a;
+  --light-primary: #3b82f6;
+  --light-secondary: #64748b;
+  --light-accent: #0ea5e9;
+  --light-grid-border: #cbd5e1;
+  --light-cell-selected: #dbeafe;
+  --light-cell-highlighted: #f0f9ff;
+  --light-keyboard-bg: #f1f5f9;
+  --light-keyboard-text: #1e293b;
+  --light-error: #ef4444;
+
+  /* Dark theme colors */
+  --dark-background: #1a1a1a;
+  --dark-text: #ffffff;
+  --dark-primary: #60a5fa;
+  --dark-secondary: #94a3b8;
+  --dark-accent: #38bdf8;
+  --dark-grid-border: #475569;
+  --dark-cell-selected: #1e3a8a;
+  --dark-cell-highlighted: #1e293b;
+  --dark-keyboard-bg: #334155;
+  --dark-keyboard-text: #f8fafc;
+  --dark-error: #f87171;
+
+  /* Default to light theme */
+  --background: var(--light-background);
+  --text: var(--light-text);
+  --primary: var(--light-primary);
+  --secondary: var(--light-secondary);
+  --accent: var(--light-accent);
+  --grid-border: var(--light-grid-border);
+  --cell-selected: var(--light-cell-selected);
+  --cell-highlighted: var(--light-cell-highlighted);
+  --keyboard-bg: var(--light-keyboard-bg);
+  --keyboard-text: var(--light-keyboard-text);
+  --error: var(--light-error);
+}
+
+[data-theme='dark'] {
+  --background: var(--dark-background);
+  --text: var(--dark-text);
+  --primary: var(--dark-primary);
+  --secondary: var(--dark-secondary);
+  --accent: var(--dark-accent);
+  --grid-border: var(--dark-grid-border);
+  --cell-selected: var(--dark-cell-selected);
+  --cell-highlighted: var(--dark-cell-highlighted);
+  --keyboard-bg: var(--dark-keyboard-bg);
+  --keyboard-text: var(--dark-keyboard-text);
+  --error: var(--dark-error);
+}
