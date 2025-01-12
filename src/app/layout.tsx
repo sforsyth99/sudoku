@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import "./styles/theme.css";
-import { IntlProvider } from "./providers/IntlProvider";
+import { LanguageProvider } from "./providers/LanguageProvider";
 import { QueryProvider } from "./providers/QueryProvider";
 import { ThemeProvider } from "./providers/ThemeProvider";
 
@@ -30,11 +30,11 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${robotoMono.variable}`}>
       <body>
         <QueryProvider>
-          <IntlProvider>
+          <LanguageProvider>
             <ThemeProvider>
               {children}
             </ThemeProvider>
-          </IntlProvider>
+          </LanguageProvider>
         </QueryProvider>
       </body>
     </html>

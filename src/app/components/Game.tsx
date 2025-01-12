@@ -5,6 +5,7 @@ import { useIntl } from "react-intl";
 import SudokuGrid from "./SudokuGrid";
 import { usePuzzle, useSolvePuzzle } from "../hooks/usePuzzle";
 import { useTheme } from '../providers/ThemeProvider';
+import { useLanguage } from '../providers/LanguageProvider';
 import styles from "./Game.module.css";
 
 type Difficulty = "easy" | "medium" | "hard";
@@ -13,6 +14,7 @@ export default function Game() {
   const intl = useIntl();
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const { theme, toggleTheme } = useTheme();
+  const { language, toggleLanguage } = useLanguage();
 
   const {
     data: puzzle,
@@ -24,7 +26,26 @@ export default function Game() {
 
   return (
     <div>
-      <div style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
+      <div style={{ 
+        position: 'absolute', 
+        top: '1rem', 
+        right: '1rem',
+        display: 'flex',
+        gap: '0.5rem'
+      }}>
+        <button
+          onClick={toggleLanguage}
+          style={{
+            padding: '0.5rem 1rem',
+            borderRadius: '0.5rem',
+            border: '1px solid var(--grid-border)',
+            backgroundColor: 'var(--keyboard-bg)',
+            color: 'var(--keyboard-text)',
+            cursor: 'pointer',
+          }}
+        >
+          {language === 'en' ? '🇫🇷' : '🇬🇧'}
+        </button>
         <button
           onClick={toggleTheme}
           style={{

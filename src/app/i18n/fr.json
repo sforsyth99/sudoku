@@ -1,0 +1,17 @@
+{
+  "app.title": "Sudoku",
+  "keyboard.pencilMode": "Mode crayon",
+  "keyboard.clear": "Effacer",
+  "timer.label": "Temps: {time}",
+  "game.congratulations": "Félicitations ! Vous avez terminé le puzzle !",
+  "game.showPencilMarks": "Afficher les marques au crayon",
+  "game.pencilMode": "Mode marques au crayon",
+  "game.loading": "Chargement du nouveau puzzle...",
+  "game.difficulty.easy": "Facile",
+  "game.difficulty.medium": "Moyen",
+  "game.difficulty.hard": "Difficile",
+  "game.newPuzzle": "Nouveau Puzzle",
+  "game.solve": "Résoudre le Puzzle",
+  "game.solving": "Résolution...",
+  "language.toggle": "Changer de langue"
+}

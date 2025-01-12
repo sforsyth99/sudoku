@@ -12,5 +12,6 @@
   "game.difficulty.hard": "Hard",
   "game.newPuzzle": "New Puzzle",
   "game.solve": "Solve Puzzle",
-  "game.solving": "Solving..."
+  "game.solving": "Solving...",
+  "language.toggle": "Switch Language"
 }
