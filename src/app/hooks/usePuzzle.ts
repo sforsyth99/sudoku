@@ -38,9 +38,15 @@ export function useSolvePuzzle() {
   
   return useMutation({
     mutationFn: solvePuzzle,
-    onSuccess: (solution, puzzle) => {
-      // Update the puzzle query data with the solution
-      queryClient.setQueryData(['puzzle', puzzle], solution);
+    onSuccess: (solution) => {
+      // Get the current query key from the cache
+      const currentQueries = queryClient.getQueryCache().findAll({
+        queryKey: ['puzzle'],
+      });
+      // Update all puzzle queries with the solution
+      currentQueries.forEach(query => {
+        queryClient.setQueryData(query.queryKey, solution);
+      });
     },
   });
 }

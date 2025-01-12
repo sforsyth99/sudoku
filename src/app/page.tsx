@@ -1,3 +1,5 @@
+'use client';
+
 import SudokuGrid from "./components/SudokuGrid";
 import Game from "./components/Game";
 import { useState, useEffect } from "react";
