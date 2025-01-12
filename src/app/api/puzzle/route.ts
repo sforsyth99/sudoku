@@ -28,13 +28,16 @@ function isValid(grid: (number | null)[][], row: number, col: number, num: numbe
 }
 
 function solveSudoku(grid: (number | null)[][]): boolean {
+  // Create a copy of the grid to avoid modifying the input
+  const workingGrid = grid.map(row => [...row]);
+  
   let row = -1;
   let col = -1;
   let isEmpty = false;
   
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
-      if (grid[i][j] === 0) {
+      if (workingGrid[i][j] === 0 || workingGrid[i][j] === null) {
         row = i;
         col = j;
         isEmpty = true;
@@ -47,10 +50,18 @@ function solveSudoku(grid: (number | null)[][]): boolean {
   if (!isEmpty) return true;
   
   for (let num = 1; num <= 9; num++) {
-    if (isValid(grid, row, col, num)) {
-      grid[row][col] = num;
-      if (solveSudoku(grid)) return true;
-      grid[row][col] = 0;
+    if (isValid(workingGrid, row, col, num)) {
+      workingGrid[row][col] = num;
+      if (solveSudoku(workingGrid)) {
+        // Copy the solution back to the input grid
+        for (let i = 0; i < 9; i++) {
+          for (let j = 0; j < 9; j++) {
+            grid[i][j] = workingGrid[i][j];
+          }
+        }
+        return true;
+      }
+      workingGrid[row][col] = 0;
     }
   }
   return false;
